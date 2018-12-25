@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Project } from './project';
 import { Issue } from './issue';
-import { Observable, of } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import base64 from 'base-64';
 
 @Injectable({
@@ -11,18 +11,26 @@ import base64 from 'base-64';
 export class ProjectService {
 
   private token;
-  private server = 'https://jira-work-logger-api.herokuapp.com';
+  private server = 'http://localhost:3000';
   private apiUrl = `${this.server}/api`;
   private authUrl = `${this.apiUrl}/authenticate`;
   private projectsUrl = `${this.apiUrl}/projects`;
   private issuesUrl = `${this.apiUrl}/projects/:projectKey/issues`;
   private logWorkUrl = `${this.apiUrl}/issues/:issueKey/worklog`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    const token = sessionStorage.getItem('TOKEN');
+
+    if (token) {
+      this.token = token;
+    }
+  }
 
   login(data): any {
     this.token = base64.encode(`${data.username}:${data.password}`);
-    console.log(this.token);
+
+    sessionStorage.setItem('TOKEN', this.token);
+
     return this.http.post(this.authUrl, data);
   }
 
@@ -32,8 +40,8 @@ export class ProjectService {
     });
   }
 
-  getIssues(key): Observable<Issue[]> {
-    const url = this.issuesUrl.replace(/:projectKey/, key);
+  getIssues(key, assignee): Observable<Issue[]> {
+    let url = this.issuesUrl.replace(/:projectKey/, key) + `?assignee=${assignee}`;
 
     return this.http.get<Issue[]>(url, {
       headers: { 'Authorization': `Basic ${this.token}` }

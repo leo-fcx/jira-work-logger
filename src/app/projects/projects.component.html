@@ -65,7 +65,7 @@
 
     <div class="app-section" *ngIf="selectedProject">
 
-      <h4>Issues ({{selectedProject.key }})</h4>
+      <h4>Issues assigned to me ({{selectedProject.key }})</h4>
       <ul class="issues">
         <li *ngIf="!issues">Loading ...</li>
         <li *ngIf="issues && issues.length === 0">No issues found.</li>

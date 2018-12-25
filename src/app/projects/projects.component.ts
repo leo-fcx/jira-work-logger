@@ -46,7 +46,7 @@ export class ProjectsComponent implements OnInit {
     this.selectedProject = project;
     this.selectedIssue = undefined;
 
-    this.getIssues(project.key);
+    this.getIssues(project.key, this.email);
   }
 
   onSelectIssue(issue: Issue) {
@@ -72,12 +72,13 @@ export class ProjectsComponent implements OnInit {
 
     if (session) {
       this.session = JSON.parse(session);
+      this.email = this.session.username;
     }
   }
 
   clearSession() {
     this.session = undefined;
-    sessionStorage.removeItem('SESSION');
+    sessionStorage.clear();
   }
 
   login(username, password) {
@@ -101,10 +102,10 @@ export class ProjectsComponent implements OnInit {
       .subscribe(projects => this.projects = projects);
   }
 
-  getIssues(key): void {
+  getIssues(key, assignee): void {
     this.issues = undefined;
     this.projectService
-      .getIssues(key)
+      .getIssues(key, assignee)
       .subscribe(issues => {
         this.issues = issues;
       });

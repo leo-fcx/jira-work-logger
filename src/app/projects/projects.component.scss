@@ -1,0 +1,105 @@
+.app-container {
+  margin: auto;
+}
+
+.app-section {
+  font-size: small;
+  width: 360px;
+  display: inline-block;
+  float: left;
+  padding: 10px;
+
+  label {
+    font-weight: bold;
+  }
+
+  .sub-section {
+    padding: .5em 1.5em;
+  }
+
+  .app-content {
+    position: relative;
+    left: 0;
+    background-color: #EEE;
+    margin: .5em 0;
+    padding: .3em;
+    border-radius: 4px;
+  }
+
+  .selected {
+    background-color: #CFD8DC !important;
+    color: white;
+  }
+
+  .projects, .issues {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+
+    li {
+      cursor: pointer;
+      position: relative;
+      left: 0;
+      background-color: #EEE;
+      margin: .5em 0;
+      padding: .3em 0;
+      height: 2em;
+      border-radius: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    li.selected:hover {
+      background-color: #BBD8DC !important;
+      color: white;
+    }
+    li:hover {
+      color: #607D8B;
+      background-color: #DDD;
+      left: .1em;
+    }
+    .text {
+      position: relative;
+      top: -3px;
+    }
+  }
+
+  .badge {
+    font-size: small;
+    display: inline-block;
+    color: white;
+    padding: 0.8em 0.7em 0 0.7em;
+    background-color: #607D8B;
+    line-height: 1em;
+    position: relative;
+    left: -3px;
+    top: -4px;
+    height: 2em;
+    margin-right: .8em;
+    border-radius: 4px 0 0 0;
+    width: 7em;
+  }
+
+  .name {
+    font-size: small;
+    line-height: 1em;
+    position: relative;
+    left: -1px;
+    top: -4px;
+    height: 2em;
+    width: 7em;
+  }
+}
+
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+  color: #0275d8 !important;
+  background: #ddd !important;
+  padding: 10px !important;
+}
+
+ul.nav {
+  background: #cde5fa;
+  line-height: 1em;
+  font-size: small;
+}

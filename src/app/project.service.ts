@@ -11,7 +11,7 @@ import base64 from 'base-64';
 export class ProjectService {
 
   private token;
-  private server = 'https://jira-work-logger-api.herokuapp.com/';
+  private server = 'https://jira-work-logger-api.herokuapp.com';
   private apiUrl = `${this.server}/api`;
   private authUrl = `${this.apiUrl}/authenticate`;
   private projectsUrl = `${this.apiUrl}/projects`;

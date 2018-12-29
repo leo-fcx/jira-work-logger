@@ -4,14 +4,14 @@
 
     <form>
       <div class="form-group">
-        <label for="username">Email address</label>
+        <label for="username">Username</label>
         <input type="email"
                class="form-control"
                id="username"
                name="username"
                aria-describedby="emailHelp"
                [(ngModel)]="username"
-               placeholder="Enter email">
+               placeholder="Enter username">
         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
       </div>
       <div class="form-group">
@@ -22,6 +22,17 @@
                name="password"
                [(ngModel)]="password"
                placeholder="Password">
+      </div>
+      <div class="form-group">
+        <label for="site">JIRA Site</label>
+        <input type="site"
+               class="form-control"
+               id="site"
+               name="site"
+               aria-describedby="siteHelp"
+               [(ngModel)]="site"
+               placeholder="https://meng-mod-04.atlassian.net">
+        <small id="siteHelp" class="form-text text-muted">Optional. You can specify the JIRA site to which you want to connect. Default site: <b>https://meng-mod-04.atlassian.net</b>.</small>
       </div>
       <button type="submit" class="btn btn-primary" (click)="onLogin()">Login</button>
     </form>
@@ -73,7 +84,11 @@
             [class.selected]="issue === selectedIssue"
             (click)="onSelectIssue(issue)">
           <span class="badge">{{issue.key}}</span>
-          <span class="name">{{issue.fields.summary}}</span>
+          <span class="name">
+            <i class="fas fa-exclamation-triangle"
+               style="color:#db524c;"
+               *ngIf="issue.fields.timeoriginalestimate !== null && (issue.fields.timespent > issue.fields.timeoriginalestimate * 1.1)"></i> {{issue.fields.summary}}
+          </span>
         </li>
       </ul>
 
@@ -88,14 +103,17 @@
 
       <h6>Current status:</h6>
       <div class="sub-section">
-        <label>Original estimate: </label>{{selectedIssue.fields.timeoriginalestimate}}
+        <label>Original estimate: </label> {{selectedIssue.fields.timeoriginalestimate | timespent }}
         <br />
-        <label>Time spent: </label>{{selectedIssue.fields.timespent}}
+        <label>Time spent: </label> {{selectedIssue.fields.timespent | timespent}}
+        <span style="color:#db524c;display:block;font-size:11px;" *ngIf="selectedIssue.fields.timeoriginalestimate !== null && (selectedIssue.fields.timespent > selectedIssue.fields.timeoriginalestimate * 1.1)">
+          <i class="fas fa-exclamation-triangle"></i> Time spent more than 110% of the original estimate.
+        </span>
         <br />
         <ngb-progressbar [showValue]="true"
                          [type]="selectedIssue.fields.timespent > selectedIssue.fields.timeoriginalestimate ? 'danger' : 'success'"
                          [value]=selectedIssue.fields.timespent
-                         [max]=selectedIssue.fields.timeoriginalestimate>
+                         [max]="selectedIssue.fields.timeoriginalestimate === null ? 0.0000000001 : selectedIssue.fields.timeoriginalestimate">
         </ngb-progressbar>
       </div>
 
@@ -105,7 +123,7 @@
         <input type="text"
                class="form-control"
                [(ngModel)]="description"
-               placeholder="Enter short 'worklog' description.">
+               placeholder="Enter short description.">
         <br />
         <button type="button"
                 (click)="onSaveWorkLog()"

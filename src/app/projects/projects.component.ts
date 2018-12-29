@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Project } from '../project';
 import { Issue } from '../issue';
 import { ProjectService } from '../project.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-projects',
@@ -10,13 +11,14 @@ import { ProjectService } from '../project.service';
 })
 export class ProjectsComponent implements OnInit {
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService, private toastr: ToastrService) {
     this.recoverSession();
   }
 
   username;
   email;
   password;
+  site;
   session;
   projects: Project[];
   issues: Issue[];
@@ -32,10 +34,11 @@ export class ProjectsComponent implements OnInit {
   }
 
   onLogin() {
-    this.login(this.username, this.password);
+    this.login(this.username, this.password, this.site);
     this.email = this.username;
     this.username = undefined;
     this.password = undefined;
+    this.site = undefined;
   }
 
   onLogout() {
@@ -81,14 +84,17 @@ export class ProjectsComponent implements OnInit {
     sessionStorage.clear();
   }
 
-  login(username, password) {
+  login(username, password, site) {
     this.projectService
-      .login({ username, password })
+      .login({ username, password, site })
       .subscribe((data) => {
         data.session.username = username;
+        this.selectedProject = undefined;
+        this.selectedIssue = undefined;
+        this.projects = [];
         this.setSession(data.session);
         this.getProjects();
-      });
+      }, (reason) => { this.toastr.error(reason.error || reason.statusText); });
   }
 
   logout() {
@@ -99,7 +105,7 @@ export class ProjectsComponent implements OnInit {
     this.projects = undefined;
     this.projectService
       .getProjects()
-      .subscribe(projects => this.projects = projects);
+      .subscribe(projects => this.projects = projects, (reason) => { this.toastr.error('Cannot get projects information.'); });
   }
 
   getIssues(key, assignee): void {
@@ -108,7 +114,7 @@ export class ProjectsComponent implements OnInit {
       .getIssues(key, assignee)
       .subscribe(issues => {
         this.issues = issues;
-      });
+      }, (reason) => { this.toastr.error('Cannot get issues information for project.'); });
   }
 
   logWork(key, data): void {
@@ -118,7 +124,8 @@ export class ProjectsComponent implements OnInit {
         this.selectedIssue.fields.timespent += this.getTime();
         this.time = {hour: 0, minute: 0};
         this.description = '';
-      });
+        this.toastr.success('Worklog saved.', '');
+      }, (reason) => { this.toastr.error('Cannot save Worklog.'); });
   }
 
   getTime() {

@@ -11,6 +11,7 @@ import base64 from 'base-64';
 export class ProjectService {
 
   private token;
+  private site;
   private server = 'https://jira-work-logger-api.herokuapp.com';
   private apiUrl = `${this.server}/api`;
   private authUrl = `${this.apiUrl}/authenticate`;
@@ -20,6 +21,7 @@ export class ProjectService {
 
   constructor(private http: HttpClient) {
     const token = sessionStorage.getItem('TOKEN');
+    this.site = sessionStorage.getItem('JIRA-SITE');
 
     if (token) {
       this.token = token;
@@ -27,21 +29,30 @@ export class ProjectService {
   }
 
   login(data): any {
+    this.site = data.site || 'https://meng-mod-04.atlassian.net';
     this.token = base64.encode(`${data.username}:${data.password}`);
 
-    sessionStorage.setItem('TOKEN', this.token);
+    const url = this.authUrl + `?site=${this.site}`;
 
-    return this.http.post(this.authUrl, data);
+    sessionStorage.setItem('TOKEN', this.token);
+    sessionStorage.setItem('JIRA-SITE', this.site);
+
+    return this.http.post(url, {
+      username: data.username,
+      password: data.password
+    });
   }
 
   getProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(this.projectsUrl, {
+    const url = this.projectsUrl + `?site=${this.site}`;
+
+    return this.http.get<Project[]>(url, {
       headers: { 'Authorization': `Basic ${this.token}` }
     });
   }
 
   getIssues(key, assignee): Observable<Issue[]> {
-    let url = this.issuesUrl.replace(/:projectKey/, key) + `?assignee=${assignee}`;
+    const url = this.issuesUrl.replace(/:projectKey/, key) + `?assignee=${assignee}&site=${this.site}`;
 
     return this.http.get<Issue[]>(url, {
       headers: { 'Authorization': `Basic ${this.token}` }
@@ -49,7 +60,7 @@ export class ProjectService {
   }
 
   logWork(key, data): any {
-    const url = this.logWorkUrl.replace(/:issueKey/, key);
+    const url = this.logWorkUrl.replace(/:issueKey/, key) + `?site=${this.site}`;
 
     return this.http.post<any>(url, data, {
       headers: { 'Authorization': `Basic ${this.token}` }

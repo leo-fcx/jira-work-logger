@@ -80,6 +80,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   clearSession() {
+    this.email = undefined;
     this.session = undefined;
     sessionStorage.clear();
   }
@@ -94,7 +95,10 @@ export class ProjectsComponent implements OnInit {
         this.projects = [];
         this.setSession(data.session);
         this.getProjects();
-      }, (reason) => { this.toastr.error(reason.error || reason.statusText); });
+      }, (reason) => {
+      this.clearSession();
+      this.toastr.error(reason.error || reason.statusText);
+    });
   }
 
   logout() {
